@@ -1,4 +1,3 @@
-# APDD
-programa apdd
+## PROGRAMA DETERMINIST PUSH DOWN AUTOMATA
 
-falta hacer un requirements Xd
+  Este programa simula cualquier apd determinista
