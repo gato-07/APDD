@@ -1,12 +1,12 @@
 
 # Clase APDD
 class APDDeterminista:
-    def __init__(self, estados, alfabeto_entrada, alfabeto_pila, estado_inicial, estados_aceptacion, transiciones):
+    def __init__(self, estados, alfabeto_entrada, alfabeto_pila, estado_inicial, estados_finales, transiciones):
         self.estados = set(estados)
         self.alfabeto_entrada = set(alfabeto_entrada)
         self.alfabeto_pila = set(alfabeto_pila)
         self.estado_inicial = estado_inicial
-        self.estados_aceptacion = set(estados_aceptacion)
+        self.estados_finales = set(estados_finales)
         self.transiciones = dict(transiciones)
         self.pila = []
 
@@ -18,6 +18,6 @@ class APDDeterminista:
                 f"Alfabeto entrada: {self.alfabeto_entrada}\n"
                 f"Alfabeto pila: {self.alfabeto_pila}\n"
                 f"Estado inicial: {self.estado_inicial}\n"
-                f"Estados de aceptación: {self.estados_aceptacion}\n"
+                f"Estados de aceptación: {self.estados_finales}\n"
                 f"Transiciones: {self.transiciones}\n"
                 f"Pila: {self.pila}")
