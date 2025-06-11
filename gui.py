@@ -2,7 +2,6 @@ from functions import *
 import tkinter as tk
 
 
-# Creo que la logica aca esta rebundante pero la dejare asi mientras
 def on_construir_apd():
     estados = entry_estados.get().split(',')
     alfabeto_entrada = entry_entrada.get().split(',')
@@ -10,22 +9,19 @@ def on_construir_apd():
     estado_inicial = entry_inicial.get()
     estados_aceptacion = entry_aceptacion.get().split(',')
 
-    # Procesar transiciones
+    acepta_por_stack_vacio = accept_by_empty_stack_var.get()
+    palabra = entry_palabra.get()
+
     transiciones = {}
-    # Limpiar espacios y saltos de línea
     transiciones_texto = entry_transiciones.get("1.0", tk.END).strip().split('\n')
 
     for linea in transiciones_texto:
-
-        # Limpiar espacios al inicio y al final de la línea
         if not linea.strip():
             continue
-        
         try:
             izquierda, derecha = linea.split('=')
             estado_actual, simbolo_entrada, tope_pila = izquierda.split(',')
             estado_siguiente, cadena_a_apilar = derecha.split(',')
-            # Convertir 'None' a None real, por si no hay entrada.
             simbolo_entrada = None if simbolo_entrada == 'None' else simbolo_entrada
             tope_pila = None if tope_pila == 'None' else tope_pila
             transiciones[(estado_actual, simbolo_entrada, tope_pila)] = (estado_siguiente, cadena_a_apilar)
@@ -35,8 +31,23 @@ def on_construir_apd():
 
     try:
         apd = construir_apd(estados, alfabeto_entrada, alfabeto_pila, estado_inicial, estados_aceptacion, transiciones)
-        label_resultado.config(text="APDD creado correctamente.")
-        apd_logic(apd) # Implementar la lógica del APD aquí, osea en el modulo functions.py
+        aceptada = apd_logic(apd, acepta_por_stack_vacio, palabra)
+        texto_aceptacion = "ACEPTADA" if aceptada else "NO ACEPTADA"
+        texto_output = (
+            "=== DATOS DE ENTRADA ===\n"
+            f"Estados: {', '.join(estados)}\n"
+            f"Alfabeto de entrada: {', '.join(alfabeto_entrada)}\n"
+            f"Alfabeto de pila: {', '.join(alfabeto_pila)}\n"
+            f"Estado inicial: {estado_inicial}\n"
+            f"Estados de aceptación: {', '.join(estados_aceptacion)}\n"
+            f"Acepta por stack vacío: {'Sí' if acepta_por_stack_vacio else 'No'}\n"
+            f"Palabra de entrada: {palabra}\n"
+            f"Transiciones:\n"
+        )
+        for k, v in transiciones.items():
+            texto_output += f"  {k} -> {v}\n"
+        texto_output += f"\n=== RESULTADO ===\nPalabra {texto_aceptacion}"
+        label_resultado.config(text=texto_output, justify="left", anchor="w")
     except Exception as e:
         label_resultado.config(text=f"Error: {e}")
 
@@ -60,7 +71,8 @@ def mainFrame(root):
     marco.grid_columnconfigure(1, weight=1)
 
     # Contenido en frame derecho
-    global entry_estados, entry_entrada, entry_pila, entry_inicial, entry_aceptacion, entry_transiciones, label_resultado
+    global entry_estados, entry_entrada, entry_pila, entry_inicial, entry_aceptacion, entry_transiciones, label_resultado, entry_palabra
+    global accept_by_empty_stack_var
 
     tk.Label(frame_der, text="Estados (separados por coma, q0,q1,q2):").pack()
     entry_estados = tk.Entry(frame_der)
@@ -86,14 +98,19 @@ def mainFrame(root):
     entry_transiciones = tk.Text(frame_der, height=8, width=40)
     entry_transiciones.pack()
 
+    # Checkbox para aceptar por stack vacío
+    accept_by_empty_stack_var = tk.BooleanVar()
+    check_stack_vacio = tk.Checkbutton(frame_der, text="Aceptar por stack vacío", variable=accept_by_empty_stack_var)
+    check_stack_vacio.pack()
+
     # Agregar label y campo para la palabra de entrada
     tk.Label(frame_der, text="Palabra de entrada:").pack()
     entry_palabra = tk.Entry(frame_der)
     entry_palabra.pack()
 
     tk.Button(frame_der, text="Construir APDD", command=on_construir_apd).pack(pady=10)
-    label_resultado = tk.Label(frame_der, text="")
-    label_resultado.pack()
+    label_resultado = tk.Label(frame_der, text="", justify="left", anchor="w", bg="#f0f0f0", width=60, height=18)
+    label_resultado.pack(pady=10, fill="both", expand=True)
 
     # Ejemplo en frame izquierdo
     label_izq = tk.Label(frame_izq, text="Contenido Izquierdo")

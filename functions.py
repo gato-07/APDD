@@ -12,9 +12,3 @@ def construir_apd(estados, alfabeto_entrada, alfabeto_pila, estado_inicial, esta
         transiciones
     )
     return apd
-
-# funcion que literalmente recibe un apd xddddd
-    # queda logica por implementar
-def apd_logic(apd):
-
-    return
